@@ -1,0 +1,42 @@
+###Format "29° 38' 55.000"" E","30° 24' 15.000"" N" to Decimel Degree & UTM
+##Change coordintates from Degree Min Sec to UTM 
+#Read the Coordinates file in CSV format
+import pandas as pd
+import glob
+import pyproj
+from pyproj import Proj
+print('######This is a program to convert Deg Min Sec to Dec Deg and UTM########')
+##Write here your Path to the folder containg Csv files ex: C:\\Users\\NRIAG-CB-MASTER\Desktop\\
+Fol_Path= '/Users/hamama/Documents/cor/' ## <<<<==== Path to the Folder
+list_csv=glob.glob(Fol_Path+'*.csv') ## Listing Cvs Files
+# Extracting the Coor. and converting to Decimal Degree
+def convert_to_deciml():
+    table = pd.read_csv(str(i))
+    tab_df = pd.DataFrame(table)
+    deg_lo = tab_df['Lon'].str.split('°', expand=True)[0]
+    min_lo = tab_df['Lon'].str.split('°', expand=True)[1].str.split("'", expand=True)[0]
+    sec_lo = tab_df['Lon'].str.split('°', expand=True)[1].str.split("'", expand=True)[1].str.split('"', expand=True)[0]
+    dec_deg_lo = deg_lo.apply(lambda x: float(x)) + min_lo.apply(lambda x: float(x)) / 60 + deg_lo.apply(lambda x: float(x)) / 3600
+    deg_la = tab_df['Lat'].str.split('°', expand=True)[0]
+    min_la = tab_df['Lat'].str.split('°', expand=True)[1].str.split("'", expand=True)[0]
+    sec_la = tab_df['Lat'].str.split('°', expand=True)[1].str.split("'", expand=True)[1].str.split('"', expand=True)[0]
+    dec_deg_la = deg_la.apply(lambda x: float(x)) + min_la.apply(lambda x: float(x)) / 60 + deg_la.apply(lambda x: float(x)) / 3600
+    lon_d=dec_deg_lo
+    lat_d=dec_deg_la
+    return(lon_d,lat_d)
+for i in list_csv:
+    lon_d ,lat_d=convert_to_deciml()
+    with open(str(i).split('.')[0]+'_output.txt','w') as output:
+        output.write('Long,Lat,X,Y'+ '\n')
+        for va in range(len(lon_d)):
+            try:
+                zone_no = int(divmod(lon_d.loc[va], 6)[0]) + 31
+            except:
+                continue
+            myProj = Proj(proj='utm', zone=zone_no, ellps='WGS84') ##Convert to UTM
+            lon_, lat_ = myProj(lon_d.loc[va], lat_d.loc[va])
+            print('Coordinates in File ',str(i).split('.')[0],'are being convereted','\n',
+                  lon_d.loc[va],lat_d.loc[va], '#####Converted###' )
+            output.write(str(lon_d.loc[va]) + ',' + str(lat_d.loc[va]) + ',' + str(lon_) + ',' + str(lat_) + '\n')
+    output.close
+    print('All Files are converted','\n','#########Finished#####')
