@@ -6,8 +6,8 @@ import glob
 import pyproj
 from pyproj import Proj
 print('######This is a program to convert Deg Min Sec to Dec Deg and UTM########')
-##Write here your Path to the folder containg Csv files ex: C:\\Users\\NRIAG-CB-MASTER\Desktop\\
-Fol_Path= '/Users/hamama/Documents/cor/' ## <<<<==== Path to the Folder
+##Write here your Path to the folder containg Csv files ex: C:\\Users\\XX\Desktop\\
+Fol_Path= '/Users/XX/Documents/cor/' ## <<<<==== Path to the Folder
 list_csv=glob.glob(Fol_Path+'*.csv') ## Listing Cvs Files
 # Extracting the Coor. and converting to Decimal Degree
 def convert_to_deciml():
